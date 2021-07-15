@@ -11,7 +11,7 @@ set print asm-demangle on
 set print pretty on
 
 # Disable style sources as the default colors can be hard to read
-set style sources off
+# set style sources off
 
 # Initialize monitoring so iprintln! macro output
 # is sent from the itm port to itm.txt
