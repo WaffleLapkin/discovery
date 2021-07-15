@@ -9,4 +9,5 @@ name = "led-roulette"
 version = "0.2.0"
 
 [dependencies]
+volatile = "0.4.3"
 aux5 = { path = "auxiliary" }
