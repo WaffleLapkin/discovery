@@ -1,4 +1,5 @@
 #![deny(unsafe_code)]
+#![allow(clippy::redundant_pattern_matching, clippy::empty_loop)]
 #![no_main]
 #![no_std]
 
@@ -20,7 +21,7 @@ fn main() -> ! {
         usart1.rdr.read().rdr().bits() as u8
     };
 
-    let mut send = |byte| {
+    let send = |byte| {
         // wait until it's safe to write to TDR
         while usart1.isr.read().txe().bit_is_clear() {}
 
@@ -29,26 +30,23 @@ fn main() -> ! {
         usart1.tdr.write(|w| w.tdr().bits(u16::from(byte)))
     };
 
+    let rev_send = |bytes: &[u8]| bytes.iter().rev().copied().for_each(&send);
+    let msg_send = |bytes: &[u8]| bytes.iter().copied().for_each(&send);
+
     // A buffer with 32 bytes of capacity
     let mut buffer: Vec<u8, 32> = Vec::new();
 
-    // Echo
     for byte in iter::repeat_with(recv) {
-        iprintln!(&mut _itm.stim[0], "Receiced {:x}", byte);
-
-        // Enter?
+        // Enter!
         if byte == 0xd {
-            buffer.iter().rev().copied().for_each(&mut send);
+            rev_send(&buffer);
             buffer.clear();
 
             continue;
         }
 
         if let Err(_) = buffer.push(byte) {
-            b"Error: Couldn't append input: Buffer overflow"
-                .iter()
-                .copied()
-                .for_each(&mut send);
+            msg_send(b"Error: Couldn't append input: Buffer overflow");
             buffer.clear();
         }
     }
