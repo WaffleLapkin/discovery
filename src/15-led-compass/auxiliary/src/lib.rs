@@ -30,6 +30,7 @@ pub type Lsm303agr = lsm303agr::Lsm303agr<
 pub use lsm303agr::Measurement;
 
 /// Cardinal directions. Each one matches one of the user LEDs.
+#[derive(Debug)]
 pub enum Direction {
     /// North / LD3
     North,
